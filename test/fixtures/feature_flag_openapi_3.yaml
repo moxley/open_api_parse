@@ -1,0 +1,768 @@
+openapi: 3.0.0
+paths:
+  /ping:
+    get:
+      tags:
+        - Ping
+      summary: ""
+      responses:
+        "204":
+          description: No Content
+      operationId: Pings.ping
+      description: Return a "ping" response
+  /healthz:
+    get:
+      tags:
+        - Ping
+      summary: ""
+      responses:
+        "200":
+          description: Success
+          content:
+            "*/*":
+              schema:
+                $ref: "#/components/schemas/Healthz"
+      operationId: Pings.healthz
+      description: Return a "healthz" response
+  "/api/v1/features/{slug}":
+    head:
+      tags:
+        - Feature
+      summary: ""
+      responses:
+        "204":
+          description: No Content
+        "404":
+          description: Not Found
+      parameters:
+        - required: true
+          name: slug
+          in: path
+          description: The slug of the feature
+          schema:
+            type: string
+      operationId: Features.head
+      description: Return a 204 when the feature exists. No auth header required.
+  "/api/v1/admin/groups/{id}":
+    patch:
+      tags:
+        - Group
+      summary: ""
+      responses:
+        "201":
+          description: Created
+          content:
+            application/vnd.api+json:
+              schema:
+                $ref: "#/components/schemas/Group"
+        "401":
+          description: Unauthorized
+          content:
+            application/vnd.api+json:
+              schema:
+                $ref: "#/components/schemas/Unauthorized"
+        "404":
+          description: Not Found
+        "422":
+          description: Unprocessable Entity
+          content:
+            application/vnd.api+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+      parameters:
+        - required: true
+          name: Authorization
+          in: header
+          description: "access token, requires a 'Bearer: ' prefix"
+          schema:
+            type: string
+        - required: true
+          name: id
+          in: path
+          description: The uuid of the group
+          schema:
+            type: string
+      requestBody:
+        $ref: "#/components/requestBodies/Group"
+      operationId: Groups.update
+      description: Update a group
+    get:
+      tags:
+        - Group
+      summary: ""
+      responses:
+        "200":
+          description: OK
+          content:
+            application/vnd.api+json:
+              schema:
+                $ref: "#/components/schemas/Group"
+        "401":
+          description: Unauthorized
+          content:
+            application/vnd.api+json:
+              schema:
+                $ref: "#/components/schemas/Unauthorized"
+        "404":
+          description: Not Found
+      parameters:
+        - required: true
+          name: Authorization
+          in: header
+          description: "access token, requires a 'Bearer: ' prefix"
+          schema:
+            type: string
+        - required: true
+          name: id
+          in: path
+          description: The uuid of the group
+          schema:
+            type: string
+      operationId: Groups.show
+      description: Display a group
+    delete:
+      tags:
+        - Group
+      summary: ""
+      responses:
+        "204":
+          description: No Content
+        "401":
+          description: Unauthorized
+          content:
+            application/vnd.api+json:
+              schema:
+                $ref: "#/components/schemas/Unauthorized"
+        "404":
+          description: Not Found
+      parameters:
+        - required: true
+          name: Authorization
+          in: header
+          description: "access token, requires a 'Bearer: ' prefix"
+          schema:
+            type: string
+        - required: true
+          name: id
+          in: path
+          description: The uuid of the group
+          schema:
+            type: string
+      operationId: Groups.delete
+      description: Delete a group
+  /api/v1/admin/groups:
+    post:
+      tags:
+        - Group
+      summary: ""
+      responses:
+        "201":
+          description: Created
+          content:
+            application/vnd.api+json:
+              schema:
+                $ref: "#/components/schemas/Group"
+        "401":
+          description: Unauthorized
+          content:
+            application/vnd.api+json:
+              schema:
+                $ref: "#/components/schemas/Unauthorized"
+        "422":
+          description: Unprocessable Entity
+          content:
+            application/vnd.api+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+      parameters:
+        - required: true
+          name: Authorization
+          in: header
+          description: "access token, requires a 'Bearer: ' prefix"
+          schema:
+            type: string
+      requestBody:
+        $ref: "#/components/requestBodies/Group"
+      operationId: Groups.create
+      description: Create a group
+    get:
+      tags:
+        - Group
+      summary: ""
+      responses:
+        "200":
+          description: OK
+          content:
+            "*/*":
+              schema:
+                $ref: "#/components/schemas/Groups"
+        "401":
+          description: Unauthorized
+          content:
+            "*/*":
+              schema:
+                $ref: "#/components/schemas/Unauthorized"
+      parameters:
+        - required: false
+          name: page[page-size]
+          in: query
+          description: Number of elements per page
+          schema:
+            type: integer
+            minimum: 1
+        - required: false
+          name: page[page]
+          in: query
+          description: Number of the page
+          schema:
+            type: integer
+            minimum: 1
+        - required: true
+          name: Authorization
+          in: header
+          description: "access token, requires a 'Bearer: ' prefix"
+          schema:
+            type: string
+        - required: false
+          name: platform
+          in: query
+          description: Filter groups by feature platforms
+          schema:
+            type: string
+        - required: false
+          name: name
+          in: query
+          description: Filter groups by name
+          schema:
+            type: string
+        - required: false
+          name: all
+          in: query
+          description: Increases default page size to 1 Million
+          schema:
+            type: string
+      operationId: Groups.index
+      description: ""
+  "/api/v1/admin/features/{id}":
+    patch:
+      tags:
+        - Feature
+      summary: ""
+      responses:
+        "201":
+          description: Created
+          content:
+            application/vnd.api+json:
+              schema:
+                $ref: "#/components/schemas/Feature"
+        "401":
+          description: Unauthorized
+          content:
+            application/vnd.api+json:
+              schema:
+                $ref: "#/components/schemas/Unauthorized"
+        "404":
+          description: Not Found
+        "422":
+          description: Unprocessable Entity
+          content:
+            application/vnd.api+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+      parameters:
+        - required: true
+          name: Authorization
+          in: header
+          description: "access token, requires a 'Bearer: ' prefix"
+          schema:
+            type: string
+        - required: true
+          name: id
+          in: path
+          description: The uuid of the feature
+          schema:
+            type: string
+      requestBody:
+        $ref: "#/components/requestBodies/Feature"
+      operationId: Features.update
+      description: Update a feature
+    get:
+      tags:
+        - Feature
+      summary: ""
+      responses:
+        "200":
+          description: OK
+          content:
+            application/vnd.api+json:
+              schema:
+                $ref: "#/components/schemas/Feature"
+        "401":
+          description: Unauthorized
+          content:
+            application/vnd.api+json:
+              schema:
+                $ref: "#/components/schemas/Unauthorized"
+        "404":
+          description: Not Found
+      parameters:
+        - required: true
+          name: Authorization
+          in: header
+          description: "access token, requires a 'Bearer: ' prefix"
+          schema:
+            type: string
+        - required: true
+          name: id
+          in: path
+          description: The uuid of the feature
+          schema:
+            type: string
+      operationId: Features.show
+      description: Display a feature
+    delete:
+      tags:
+        - Feature
+      summary: ""
+      responses:
+        "204":
+          description: No Content
+        "401":
+          description: Unauthorized
+          content:
+            application/vnd.api+json:
+              schema:
+                $ref: "#/components/schemas/Unauthorized"
+        "404":
+          description: Not Found
+      parameters:
+        - required: true
+          name: Authorization
+          in: header
+          description: "access token, requires a 'Bearer: ' prefix"
+          schema:
+            type: string
+        - required: true
+          name: id
+          in: path
+          description: The uuid of the feature
+          schema:
+            type: string
+      operationId: Features.delete
+      description: Delete a feature
+  /api/v1/admin/features:
+    post:
+      tags:
+        - Feature
+      summary: ""
+      responses:
+        "201":
+          description: Created
+          content:
+            application/vnd.api+json:
+              schema:
+                $ref: "#/components/schemas/Feature"
+        "401":
+          description: Unauthorized
+          content:
+            application/vnd.api+json:
+              schema:
+                $ref: "#/components/schemas/Unauthorized"
+        "422":
+          description: Unprocessable Entity
+          content:
+            application/vnd.api+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+      parameters:
+        - required: true
+          name: Authorization
+          in: header
+          description: "access token, requires a 'Bearer: ' prefix"
+          schema:
+            type: string
+      requestBody:
+        $ref: "#/components/requestBodies/Feature"
+      operationId: Features.create
+      description: Create a feature
+    get:
+      tags:
+        - Feature
+      summary: ""
+      responses:
+        "200":
+          description: OK
+          content:
+            "*/*":
+              schema:
+                $ref: "#/components/schemas/Features"
+        "401":
+          description: Unauthorized
+          content:
+            "*/*":
+              schema:
+                $ref: "#/components/schemas/Unauthorized"
+        "404":
+          description: Not Found
+          content:
+            "*/*":
+              schema:
+                $ref: "#/components/schemas/NoGroup"
+      parameters:
+        - required: false
+          name: page[page-size]
+          in: query
+          description: Number of elements per page
+          schema:
+            type: integer
+            minimum: 1
+        - required: false
+          name: page[page]
+          in: query
+          description: Number of the page
+          schema:
+            type: integer
+            minimum: 1
+        - required: true
+          name: Authorization
+          in: header
+          description: "access token, requires a 'Bearer: ' prefix"
+          schema:
+            type: string
+        - required: false
+          name: name
+          in: query
+          description: Filter features by either literal name or slug
+          schema:
+            type: string
+        - required: false
+          name: all
+          in: query
+          description: Increases default page size to 1 Million
+          schema:
+            type: string
+      operationId: Features.index
+      description: ""
+info:
+  version: "1.0"
+  title: Feature Flag Service
+components:
+  requestBodies:
+    Group:
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/Group"
+      description: New group to create
+      required: true
+    Feature:
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/Feature"
+      description: New feature to create
+      required: true
+  schemas:
+    Unauthorized:
+      type: object
+      title: Unauthorized
+      description: Produced when the authorization header is absent or invalid
+    NoGroup:
+      type: object
+      title: Not Found
+      description: Produced when the group_id does not match a valid group
+    Healthz:
+      type: object
+      title: Healthz
+      required:
+        - ip
+        - environment
+      properties:
+        ip:
+          type: string
+          description: "IP #"
+        environment:
+          type: string
+          description: Environment
+      description: A test API response
+    Groups:
+      type: object
+      required:
+        - data
+      properties:
+        meta:
+          type: object
+          properties:
+            total-pages:
+              type: integer
+              description: The total number of pages available
+            total-count:
+              type: integer
+              description: The total number of items available
+        links:
+          type: object
+          properties:
+            self:
+              type: string
+              description: Link to this page of results
+            prev:
+              type: string
+              description: Link to the previous page of results
+            next:
+              type: string
+              description: Link to the next page of results
+            last:
+              type: string
+              description: Link to the last page of results
+            first:
+              type: string
+              description: Link to the first page of results
+        data:
+          type: array
+          items:
+            $ref: "#/components/schemas/GroupResource"
+          description: Content with [GroupResource](#groupresource) objects
+      description: A page of [GroupResource](#groupresource) results
+    GroupResource:
+      type: object
+      properties:
+        type:
+          type: string
+          description: The JSON-API resource type
+        relationships:
+          type: object
+          properties:
+            features:
+              type: object
+              properties:
+                links:
+                  type: object
+                  properties:
+                    self:
+                      type: string
+                      description: Relationship link for features
+                    related:
+                      type: string
+                      description: Related features link
+                data:
+                  type: array
+                  items:
+                    type: object
+                    properties:
+                      type:
+                        type: string
+                        description: Type of related features resource
+                      id:
+                        type: string
+                        description: Related features resource id
+        links:
+          type: object
+          properties:
+            self:
+              type: string
+              description: The link to this group resource
+        id:
+          type: string
+          description: The JSON-API resource ID
+        attributes:
+          type: object
+          required:
+            - slug
+            - name
+            - description
+          properties:
+            updated_at:
+              type: string
+              format: ISO-8601
+              description: When was the group last updated
+            unique-platforms:
+              type: array
+              description: The distinct platforms of the Group's Features
+              items:
+                {}
+            slug:
+              type: string
+              description: A unique, URL-friendly, human-readable identifier for the group
+            name:
+              type: string
+              description: A human-readable identifier for the group
+            inserted_at:
+              type: string
+              format: ISO-8601
+              description: When was the group initially inserted
+            feature-count:
+              type: object
+              description: An object with active and total properties, describing the
+                Group's features
+            description:
+              type: string
+              description: Longer text about the group
+      description: A many-to-many enclosure for Features
+    Group:
+      type: object
+      required:
+        - data
+      properties:
+        links:
+          type: object
+          properties:
+            self:
+              type: string
+              description: the link that generated the current response document.
+        included:
+          type: array
+          items:
+            {}
+          description: Included resources
+        data:
+          $ref: "#/components/schemas/GroupResource"
+      description: A JSON-API document with a single [GroupResource](#groupresource)
+        resource
+    Features:
+      type: object
+      required:
+        - data
+      properties:
+        meta:
+          type: object
+          properties:
+            total-pages:
+              type: integer
+              description: The total number of pages available
+            total-count:
+              type: integer
+              description: The total number of items available
+        links:
+          type: object
+          properties:
+            self:
+              type: string
+              description: Link to this page of results
+            prev:
+              type: string
+              description: Link to the previous page of results
+            next:
+              type: string
+              description: Link to the next page of results
+            last:
+              type: string
+              description: Link to the last page of results
+            first:
+              type: string
+              description: Link to the first page of results
+        data:
+          type: array
+          items:
+            $ref: "#/components/schemas/FeatureResource"
+          description: Content with [FeatureResource](#featureresource) objects
+      description: A page of [FeatureResource](#featureresource) results
+    FeatureResource:
+      type: object
+      properties:
+        type:
+          type: string
+          description: The JSON-API resource type
+        relationships:
+          type: object
+          properties:
+            groups:
+              type: object
+              properties:
+                links:
+                  type: object
+                  properties:
+                    self:
+                      type: string
+                      description: Relationship link for groups
+                    related:
+                      type: string
+                      description: Related groups link
+                data:
+                  type: array
+                  items:
+                    type: object
+                    properties:
+                      type:
+                        type: string
+                        description: Type of related groups resource
+                      id:
+                        type: string
+                        description: Related groups resource id
+        links:
+          type: object
+          properties:
+            self:
+              type: string
+              description: The link to this feature resource
+        id:
+          type: string
+          description: The JSON-API resource ID
+        attributes:
+          type: object
+          required:
+            - slug
+            - platform
+            - is-on
+          properties:
+            updated_at:
+              type: string
+              format: ISO-8601
+              description: When was the feature last updated
+            slug:
+              type: string
+              description: A unique, URL-friendly, human-readable identifier for the feature
+            platform:
+              type: string
+              description: A choice among 'android', 'backend', 'ios', and 'web'
+            is-on:
+              type: boolean
+              description: is the described feature active?
+            inserted_at:
+              type: string
+              format: ISO-8601
+              description: When was the feature initially inserted
+            groups-details:
+              type: array
+              description: An array of maps with the id, name, and slug for each associated
+                Group
+              items:
+                {}
+      description: A feature provided by a given unit of software
+    Feature:
+      type: object
+      required:
+        - data
+      properties:
+        links:
+          type: object
+          properties:
+            self:
+              type: string
+              description: the link that generated the current response document.
+        included:
+          type: array
+          items:
+            {}
+          description: Included resources
+        data:
+          $ref: "#/components/schemas/FeatureResource"
+      description: A JSON-API document with a single [FeatureResource](#featureresource)
+        resource
+    Error:
+      type: object
+      title: Errors
+      required:
+        - error
+      properties:
+        error:
+          type: string
+          description: The message of the error raised
+      description: Error responses from the API
+    AllFeatures:
+      type: object
+      title: all_features
+      properties:
+        all_features:
+          type: string
+      description: Provide a value of 'on' or 'off' within the attributes on a PATCH update
+        to activate/deactivate all owned features
